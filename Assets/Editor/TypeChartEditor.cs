@@ -53,7 +53,7 @@ public class TypeChartEditor : EditorWindow
                     else
                     {
                         textStyle.normal.background = MakeTex(1, 1, Color.white);
-                        textStyle.normal.textColor = Color.blue;
+                        //textStyle.normal.textColor = Color.blue;
                         typeFields[index - 1].type_name = EditorGUILayout.TextField(typeFields[index - 1].type_name, textStyle, GUILayout.Height(70),
                             GUILayout.Width(70));
                     }
@@ -61,6 +61,8 @@ public class TypeChartEditor : EditorWindow
             }
             else
             {
+                textStyle.normal.background = MakeTex(1, 1, Color.white);
+                textStyle.normal.textColor = Color.black;
                 typeFields[i - 1].type_name = EditorGUILayout.TextField(typeFields[i - 1].type_name, textStyle, GUILayout.Height(70),
                     GUILayout.Width(70));
                 for (int c = 0; c < typeFields.Count; c++)
@@ -69,6 +71,7 @@ public class TypeChartEditor : EditorWindow
 
                     /*EditorGUILayout.TextField(" ", textStyle, GUILayout.Height(70),
                         GUILayout.Width(70));*/
+                    ColorCoding(GetSelectedIndex(typeFields[i - 1], typeFields[c]), textStyle);
                     selectedIndex = EditorGUILayout.Popup(GetSelectedIndex(typeFields[i - 1], typeFields[c]), multiplier, textStyle, GUILayout.Height(70),
                         GUILayout.Width(70));
                     UpdateEffectiveness(typeFields[i -1], typeFields[c], selectedIndex);
@@ -118,6 +121,27 @@ public class TypeChartEditor : EditorWindow
         }
     }
 
+    private void ColorCoding(int multiplier, GUIStyle style)
+    {
+        switch (multiplier)
+        {
+            case 0:
+                style.normal.background = MakeTex(1, 1, Color.red);
+                style.normal.textColor = Color.white;
+                break;
+            case 1:
+                style.normal.background = MakeTex(1, 1, new Color32(209, 209, 209, 255));
+                style.normal.textColor = Color.black;
+                break;
+            case 2:
+                style.normal.background = MakeTex(1, 1, new Color32(107, 142, 35, 255));
+                style.normal.textColor = Color.white;
+                break;
+            default:
+                Debug.Log("This option doesn't exist. Check for errors!");
+                break;
+        }
+    }
     private void RemoveListData()
     {
         for (int i = 0; i < typeFields.Count; i++)

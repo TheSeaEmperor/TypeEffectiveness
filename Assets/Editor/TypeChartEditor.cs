@@ -24,9 +24,8 @@ public class TypeChartEditor : EditorWindow
     private void OnGUI()
     {
         GUIStyle textStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, margin = new RectOffset(2, 2, 2, 2) };
-        //GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter};
+        GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter};
         GUIStyle buttonPositioning = new GUIStyle() { alignment = TextAnchor.MiddleRight };
-        GUIStyle positionCenter = new GUIStyle() { alignment = TextAnchor.MiddleCenter };
 
         GetTypes();
         EditorGUILayout.BeginVertical();
@@ -38,6 +37,12 @@ public class TypeChartEditor : EditorWindow
             TypeCreator.ShowWindow();
         }
         GUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField(" ", labelStyle, GUILayout.Height(17), GUILayout.Width(70));
+        labelStyle.normal.background = MakeTex(1, 1, Color.yellow);
+        EditorGUILayout.LabelField("DEFENDING", labelStyle, GUILayout.Height(17), 
+            GUILayout.Width(70 * typeFields.Count));
+        EditorGUILayout.EndHorizontal();
         RemoveListData();
         for (int i = 0; i < typeFields.Count + 1; i++)
         {

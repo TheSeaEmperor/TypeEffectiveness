@@ -66,7 +66,10 @@ public class TypeCreator : EditorWindow
         }
 
         AssetDatabase.CreateAsset(data, "Assets/Resources/Types/" + typeName + ".asset");
-        UpdateTypes(data);
+        EditorUtility.SetDirty(data);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        //UpdateTypes(data);
         UpdateOptions();
         ClearFields();
     }

@@ -28,6 +28,7 @@ public class TypeChartEditor : EditorWindow
         GUIStyle buttonPositioning = new GUIStyle() { alignment = TextAnchor.MiddleRight };
         GUIStyle positionCenter = new GUIStyle() { alignment = TextAnchor.MiddleCenter };
 
+        GetTypes();
         EditorGUILayout.BeginVertical();
         scrollPosY = EditorGUILayout.BeginScrollView(scrollPosY);
         GUILayout.BeginHorizontal(buttonPositioning);
@@ -89,6 +90,17 @@ public class TypeChartEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
+    private void GetTypes()
+    {
+        TypeData[] data = Resources.FindObjectsOfTypeAll<TypeData>();
+
+        typeFields.Clear();
+        foreach (TypeData types in data)
+        {
+            typeFields.Add(types);
+        }
+    }
+
     private void UpdateEffectiveness(TypeData attack, TypeData defend, int selected)
     {
         if (GetSelectedIndex(attack, defend) != selected)
@@ -118,6 +130,10 @@ public class TypeChartEditor : EditorWindow
                     Debug.Log("This option doesn't exist. Check for errors!");
                     break;
             }
+
+            EditorUtility.SetDirty(defend);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 

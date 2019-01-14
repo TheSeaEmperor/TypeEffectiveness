@@ -5,15 +5,12 @@ using UnityEngine;
 
 public class TypeChartEditor : EditorWindow
 {
-    //private string typeField;
-    //private string effectField;
+    public static List<TypeData> typeFields = new List<TypeData>();
+
     private readonly string emptyLabel = " ";
     private string[] multiplier = new string[] { "Halfx", "1x", "2x"};
     private Vector2 scrollPosY;
     private Vector2 scrollPosX;
-    public static List<TypeData> typeFields = new List<TypeData>();
-    //public static List<int> selectedIndexes = new List<int>();
-    //private List<string> effectFields = new List<string>();
 
     [MenuItem("Window/TypeChart")]
     public static void ShowWindow()
@@ -29,6 +26,7 @@ public class TypeChartEditor : EditorWindow
 
         GetTypes();
         EditorGUILayout.BeginVertical();
+
         scrollPosY = EditorGUILayout.BeginScrollView(scrollPosY);
         GUILayout.BeginHorizontal(buttonPositioning);
         GUILayout.FlexibleSpace();
@@ -38,10 +36,12 @@ public class TypeChartEditor : EditorWindow
         }
         GUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
+
         EditorGUILayout.LabelField(" ", labelStyle, GUILayout.Height(17), GUILayout.Width(70));
         labelStyle.normal.background = MakeTex(1, 1, Color.yellow);
         EditorGUILayout.LabelField("DEFENDING", labelStyle, GUILayout.Height(17), 
             GUILayout.Width(70 * typeFields.Count));
+
         EditorGUILayout.EndHorizontal();
         RemoveListData();
         for (int i = 0; i < typeFields.Count + 1; i++)
@@ -59,7 +59,6 @@ public class TypeChartEditor : EditorWindow
                     else
                     {
                         textStyle.normal.background = MakeTex(1, 1, Color.white);
-                        //textStyle.normal.textColor = Color.blue;
                         typeFields[index - 1].type_name = EditorGUILayout.TextField(typeFields[index - 1].type_name, textStyle, GUILayout.Height(70),
                             GUILayout.Width(70));
                     }
@@ -75,8 +74,6 @@ public class TypeChartEditor : EditorWindow
                 {
                     int selectedIndex = 0;
 
-                    /*EditorGUILayout.TextField(" ", textStyle, GUILayout.Height(70),
-                        GUILayout.Width(70));*/
                     ColorCoding(GetSelectedIndex(typeFields[i - 1], typeFields[c]), textStyle);
                     selectedIndex = EditorGUILayout.Popup(GetSelectedIndex(typeFields[i - 1], typeFields[c]), multiplier, textStyle, GUILayout.Height(70),
                         GUILayout.Width(70));
@@ -95,6 +92,7 @@ public class TypeChartEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
+    //Grabs the TypeData Scriptable Objects and Adds them to a List
     private void GetTypes()
     {
         TypeData[] data = Resources.FindObjectsOfTypeAll<TypeData>();
@@ -106,6 +104,7 @@ public class TypeChartEditor : EditorWindow
         }
     }
 
+    //Updates changes made to the Types on the Type Chart and Updates the TypeData Scriptable Object
     private void UpdateEffectiveness(TypeData attack, TypeData defend, int selected)
     {
         if (GetSelectedIndex(attack, defend) != selected)
@@ -142,6 +141,7 @@ public class TypeChartEditor : EditorWindow
         }
     }
 
+    //Changes Colors of Type Chart backgrounds depending on Effectiveness or Resistance
     private void ColorCoding(int multiplier, GUIStyle style)
     {
         switch (multiplier)
@@ -163,15 +163,18 @@ public class TypeChartEditor : EditorWindow
                 break;
         }
     }
+
+    //Removes Reference to TypeData Scriptable Object on the List if it no longer exists
     private void RemoveListData()
     {
         for (int i = 0; i < typeFields.Count; i++)
         {
-            if (typeFields[i] == null)
+            if (typeFields[i].Equals(null))
                 typeFields.Remove(typeFields[i]);
         }
     }
 
+    //Gets the Index for Type Effectiveness and Resistance for use in the Popup GUI
     private int GetSelectedIndex(TypeData attack, TypeData defend)
     {
         for (int i = 0; i < defend.Effective.Count; i++)
@@ -193,6 +196,7 @@ public class TypeChartEditor : EditorWindow
         return CheckMultiplierIndex("1x");
     }
 
+    //Checks if the string is equal to any of the multiplier options
     private int CheckMultiplierIndex(string num)
     {
         for (int i = 0; i < multiplier.Length; i++)
@@ -203,6 +207,7 @@ public class TypeChartEditor : EditorWindow
         return 0;
     }
 
+    //Creates a Texture based on Dimensions and Color Choice
     private Texture2D MakeTex(int width, int height, Color col)
     {
         Color[] pix = new Color[width * height];

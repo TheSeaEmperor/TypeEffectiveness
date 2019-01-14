@@ -32,9 +32,9 @@ public class TypeCreator : EditorWindow
         typeName = EditorGUILayout.TextField("Type Name:", typeName);
         GUILayout.Space(2);
         selectedEffective = EditorGUILayout.Popup("Effected By:", selectedEffective, types);
-        GUILayout.Label("Effected By: " + UpdateEffectiveLabel(types), listLabel);
+        GUILayout.Label("Effected By: " + UpdateLabels(types, effective, selectedEffective), listLabel);
         selectedResisted = EditorGUILayout.Popup("Resistant To:", selectedResisted, types);
-        GUILayout.Label("Resists: " + UpdateResistsLabel(types), listLabel);
+        GUILayout.Label("Resists: " + UpdateLabels(types, resistant, selectedResisted), listLabel);
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Clear"))
         {
@@ -50,6 +50,7 @@ public class TypeCreator : EditorWindow
         EditorGUILayout.EndVertical();
     }
 
+    //Creates a Scriptable Object based on Input Data
     private void CreateTypeData()
     {
         TypeData data = ScriptableObject.CreateInstance<TypeData>();
@@ -69,11 +70,11 @@ public class TypeCreator : EditorWindow
         EditorUtility.SetDirty(data);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        //UpdateTypes(data);
         UpdateOptions();
         ClearFields();
     }
 
+    //Clears the Input Fields
     private void ClearFields()
     {
         typeName = "";
@@ -83,12 +84,7 @@ public class TypeCreator : EditorWindow
         resistant.Clear();
     }
 
-    private void UpdateTypes(TypeData data)
-    {
-        TypeChartEditor.typeFields.Add(data);
-        //TypeChartEditor.selectedIndexes.Add(0);
-    }
-
+    //Updates Effective / Resistant Options
     private void UpdateOptions()
     {
         types = new string[TypeChartEditor.typeFields.Count + 1];
@@ -102,73 +98,33 @@ public class TypeCreator : EditorWindow
 
     }
 
-    private string UpdateEffectiveLabel(string[] types)
+    //Updates the Labels for Effective / Resistance
+    private string UpdateLabels(string[] types, List<string> label, int selected)
     {
-        string effectiveString = "";
+        string effectivenessLabel = "";
         bool exists = false;
 
-        if (effective.Count == 0 && selectedEffective != 0)
+        if (label.Count == 0 && selected != 0)
+            label.Add(types[selected]);
+        else if (selected != 0)
         {
-            effective.Add(types[selectedEffective]);
-        }
-        else if (selectedEffective != 0)
-        {
-            for (int c = 0; c < effective.Count; c++)
+            for (int i = 0; i < label.Count; i++)
             {
-                if (effective[c] == types[selectedEffective])
-                {
+                if (label[i].Equals(types[selected]))
                     exists = true;
-                }
             }
 
             if (!exists)
-                effective.Add(types[selectedEffective]);
+                label.Add(types[selected]);
         }
 
-        if (effective.Count > 0)
+        if (label.Count > 0)
         {
-            for (int i = 0; i < effective.Count; i++)
+            for (int i = 0; i < label.Count; i++)
             {
-                effectiveString += (effective[i] + ", ");
+                effectivenessLabel += (label[i] + ", ");
             }
         }
-
-        return effectiveString;
+        return effectivenessLabel;
     }
-
-    private string UpdateResistsLabel(string[] types)
-    {
-        string resistsString = "";
-        bool exists = false;
-
-        if (resistant.Count == 0 && selectedResisted != 0)
-        {
-            resistant.Add(types[selectedResisted]);
-        }
-        else if (selectedResisted != 0)
-        {
-            for (int c = 0; c < resistant.Count; c++)
-            {
-                if (resistant[c] == types[selectedResisted])
-                {
-                    exists = true;
-                }
-            }
-
-            if (!exists)
-                resistant.Add(types[selectedResisted]);
-        }
-
-        if (resistant.Count > 0)
-        {
-            for (int i = 0; i < resistant.Count; i++)
-            {
-                resistsString += (resistant[i] + ", ");
-            }
-        }
-        
-
-        return resistsString;
-    }
-
 }

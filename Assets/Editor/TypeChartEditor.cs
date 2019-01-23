@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class TypeChartEditor : EditorWindow
 {
+    //List of TypeData Scriptable Objects
     public static List<TypeData> typeFields = new List<TypeData>();
 
     private readonly string emptyLabel = " ";
@@ -24,13 +25,13 @@ public class TypeChartEditor : EditorWindow
         GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter};
         GUIStyle buttonPositioning = new GUIStyle() { alignment = TextAnchor.MiddleRight };
 
-        GetTypes();
+        GetTypes(); //Grabs all TypeData Scriptable Objects
         EditorGUILayout.BeginVertical();
 
-        scrollPosY = EditorGUILayout.BeginScrollView(scrollPosY);
+        scrollPosY = EditorGUILayout.BeginScrollView(scrollPosY); //Begin Scroll Vertical
         GUILayout.BeginHorizontal(buttonPositioning);
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Add New", GUILayout.Width(61)))
+        if (GUILayout.Button("Add New", GUILayout.Width(61))) //Creates "Add New" Button
         {
             TypeCreator.ShowWindow();
         }
@@ -43,12 +44,15 @@ public class TypeChartEditor : EditorWindow
             GUILayout.Width(70 * typeFields.Count));
 
         EditorGUILayout.EndHorizontal();
-        RemoveListData();
+        RemoveListData(); //Removes Null List Data
+
+        //Circulates through the TypeData List to Create the Type Chart
         for (int i = 0; i < typeFields.Count + 1; i++)
         {
             EditorGUILayout.BeginHorizontal();
             if (i.Equals(0))
             {
+                //Creates the First Row of the Type Chart - Horizontal List of Types
                 for (int index = 0; index < typeFields.Count + 1; index++)
                 {
                     if (index.Equals(0))
@@ -60,7 +64,7 @@ public class TypeChartEditor : EditorWindow
                     {
                         textStyle.normal.background = MakeTex(1, 1, Color.white);
                         typeFields[index - 1].type_name = EditorGUILayout.TextField(typeFields[index - 1].type_name, textStyle, GUILayout.Height(70),
-                            GUILayout.Width(70));
+                            GUILayout.Width(70)); //Textfield that Displays Type Name - Also Changeable within the Editor
                     }
                 }
             }
@@ -70,25 +74,26 @@ public class TypeChartEditor : EditorWindow
                 textStyle.normal.textColor = Color.black;
                 typeFields[i - 1].type_name = EditorGUILayout.TextField(typeFields[i - 1].type_name, textStyle, GUILayout.Height(70),
                     GUILayout.Width(70));
+                //Circulates through the Effectiveness / Resistances for each Type and adds them to the Type Chart
                 for (int c = 0; c < typeFields.Count; c++)
                 {
-                    int selectedIndex = 0;
+                    int selectedIndex = 0; //Used to check for changes within the GUI Popup
 
-                    ColorCoding(GetSelectedIndex(typeFields[i - 1], typeFields[c]), textStyle);
+                    ColorCoding(GetSelectedIndex(typeFields[i - 1], typeFields[c]), textStyle); //Color Codes the Type Chart based on the multiplier
                     selectedIndex = EditorGUILayout.Popup(GetSelectedIndex(typeFields[i - 1], typeFields[c]), multiplier, textStyle, GUILayout.Height(70),
-                        GUILayout.Width(70));
-                    UpdateEffectiveness(typeFields[i -1], typeFields[c], selectedIndex);
+                        GUILayout.Width(70)); //GUI Popup for Displaying the Effectiveness / Resistance of the Defending Type based on the Attacking Type
+                    UpdateEffectiveness(typeFields[i -1], typeFields[c], selectedIndex); //Updates any changes to the TypeData Scriptable Object
                 }
             }
             EditorGUILayout.EndHorizontal();
 
         }
-        EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndScrollView(); //End Scroll Vertical
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.BeginHorizontal();
-        scrollPosX = EditorGUILayout.BeginScrollView(scrollPosX);
-        EditorGUILayout.EndScrollView();
+        scrollPosX = EditorGUILayout.BeginScrollView(scrollPosX); //Begin Scroll Horizontal
+        EditorGUILayout.EndScrollView(); //End Scroll Horizontal
         EditorGUILayout.EndHorizontal();
     }
 
@@ -107,8 +112,10 @@ public class TypeChartEditor : EditorWindow
     //Updates changes made to the Types on the Type Chart and Updates the TypeData Scriptable Object
     private void UpdateEffectiveness(TypeData attack, TypeData defend, int selected)
     {
+        //Checks if any changes were made to the GUI Popup and Reflects those Changes on the Scriptable Object
         if (GetSelectedIndex(attack, defend) != selected)
         {
+            //Removes Old Changes
             for (int i = 0; i < defend.Effective.Count; i++)
             {
                 if (defend.Effective[i].Equals(attack.type_name))
@@ -120,6 +127,7 @@ public class TypeChartEditor : EditorWindow
                     defend.Resists.Remove(attack.type_name);
             }
 
+            //Adds New Changes
             switch (selected)
             {
                 case 0:
@@ -135,6 +143,7 @@ public class TypeChartEditor : EditorWindow
                     break;
             }
 
+            //Saves Scriptable Object Asset Changes
             EditorUtility.SetDirty(defend);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
